@@ -1,19 +1,16 @@
-import time
+import os
 import requests
 from playwright.sync_api import sync_playwright
 
-# --- CONFIGURATION ---
 THEATRE_URL = "https://in.bookmyshow.com/cinemas/CHEN/pvr-palazzo-the-nexus-vijaya-mall/buytickets/PVPZ/20261221"
 TARGET_DATE = "20261221"
-MOVIE_NAME = "avengers"  # Shorter match is safer than including "(UA16+)"
-
-NTFY_TOPIC = "doom_alert2112"  # Change this & subscribe to it in the ntfy app
-CHECK_INTERVAL_SECONDS = 120     # 3 minutes
+MOVIE_NAME = "avengers"
+NTFY_TOPIC = os.environ["NTFY_TOPIC"]
 
 
 def send_alert(message: str):
     resp = requests.post(
-        f"https://ntfy.sh/doom_alert2112",
+        f"https://ntfy.sh/{NTFY_TOPIC}",
         data=message.encode("utf-8"),
         headers={"Title": "BMS Tickets LIVE!", "Priority": "urgent"},
         timeout=15,
@@ -40,11 +37,8 @@ def check_tickets() -> bool:
                 return False
 
             body_text = page.inner_text("body").lower()
-
-            # Verify Dec 21 is actually rendered on the page (prevents fallback false positives)
             date_is_live = "21\ndec" in body_text or "21 dec" in body_text
             movie_is_live = MOVIE_NAME.lower() in body_text
-
             return date_is_live and movie_is_live
         finally:
             browser.close()
@@ -56,4 +50,4 @@ if __name__ == "__main__":
         print(msg)
         send_alert(msg)
     else:
-        print(f"[{time.strftime('%H:%M:%S')}] Not open yet.")
+        print("Not open yet.")
