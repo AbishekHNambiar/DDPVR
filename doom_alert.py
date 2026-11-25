@@ -45,6 +45,7 @@ def check_tickets() -> bool:
 
 
 if __name__ == "__main__":
+    send_alert("Test ping from GitHub!")
     if check_tickets():
         msg = f"🎟️ Tickets are LIVE for Avengers: Doomsday on Dec 21!\nBook now: {THEATRE_URL}"
         print(msg)
