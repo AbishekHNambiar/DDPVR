@@ -67,7 +67,7 @@ def check_pvr(context) -> bool:
 
 
 if __name__ == "__main__":
-    send_alert("Test ping from GitHub!")
+    send_alert("Test Ping", "Test ping from GitHub!")
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(
